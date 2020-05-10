@@ -1,5 +1,8 @@
-1. ls -al
-2. find
-3. ps -aux
-4. kill
-5. diff
+1. mv -t
+2. chmod
+3. pwd
+4. ping -W
+5. find
+6. ps -aux
+7. kill
+8. diff
