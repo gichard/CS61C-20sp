@@ -1,9 +1,11 @@
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
+1. 'set arglist' then 'run', or 'run arglist'
+2. 'b [file:]line' to set break point to a file at specified line, 
+    or 'b [file:]func' to set break point at gien function in a file.
+3. use 'n' command
+4. use 's' command to step into the function
+5. use 'c' command
+6. use 'print expression', or use 'print file::variablname' to 
+    print out value of a varible in the file 
+7. use 'watch expression'
+8. use 'info locals'
+9. use 'q'
