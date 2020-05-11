@@ -32,7 +32,15 @@ void insertData(HashTable *table, void *key, void *data) {
   // 1. find the right hash bucket location with table->hashFunction.
   // 2. allocate a new hash bucket struct.
   // 3. add to the head of the hash bucket list.
-  return NULL;
+    if (key != NULL) {
+        unsigned int bucketInd = table->hashFunction(key) % table->size;
+        struct HashBucket *newBuck = malloc(sizeof(struct HashBucket));
+        newBuck->key = key;
+        newBuck->data = data;
+        struct HashBucket *target = table->data[bucketInd];
+        table->data[bucketInd] = newBuck;
+        newBuck->next = target;
+    }
 }
 
 /*
@@ -43,5 +51,16 @@ void *findData(HashTable *table, void *key) {
   // HINT:
   // 1. find the right hash bucket with table->hashFunction.
   // 2. walk the bucket list and check equality with table->equalFunction.
+    if (key != NULL) {
+        unsigned int bucketInd = table->hashFunction(key) % table->size;
+        struct HashBucket *target = table->data[bucketInd];
+        while (target != NULL) {
+            if (table->equalFunction(key, target->data)) {
+                return target->data;
+            }
+            target = target->next;
+        }
+    }
   return NULL;
 }
+

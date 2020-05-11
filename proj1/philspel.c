@@ -68,9 +68,19 @@ int main(int argc, char **argv) {
  * convenience.
  */
 unsigned int stringHash(void *s) {
-  char *string = (char *)s;
-  fprintf(stderr, "Need to define stringHash\n");
-  exit(0);
+    char *string = (char *)s;
+//  fprintf(stderr, "Need to define stringHash\n");
+//  exit(0);
+    if (string == NULL) {
+        fprintf(stderr, "undefined stringHash for NULL");
+        exit(0);
+    }
+    unsigned int hash= 0;
+    while (*(string) != '\0') {
+        hash = ((hash * NUMCHAR) % PRIME_BASE + *string) % PRIME_BASE;
+        string++;
+    }
+    return hash;
 }
 
 /*
@@ -79,10 +89,59 @@ unsigned int stringHash(void *s) {
  * and 0 otherwise.
  */
 int stringEquals(void *s1, void *s2) {
-  char *string1 = (char *)s1;
-  char *string2 = (char *)s2;
-  fprintf(stderr, "Need to define stringEquals\n");
-  exit(0);
+    char *string1 = (char *)s1;
+    char *string2 = (char *)s2;
+//  fprintf(stderr, "Need to define stringEquals\n");
+//  exit(0);
+    while (*string1 != '\0' && *string2 != '\0') {
+        if (*string1 != *string2) {
+            return 0;
+        }
+        string1++;
+        string2++;
+    }
+
+    if (*string1 == '\0' && *string2 == '\0') {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// read in an arbitrary length word from file, returns first char
+// that is not an alphabet. returns -1 at eof
+char readWord(FILE *fp, char **word, int size) {
+    int len = 0;
+    *word = malloc(sizeof(char) * size);
+    char c;
+    while (!feof(fp)) {
+        c = (char) fgetc(fp);
+        // reallocate memory if cannot hold
+        if (len == size) {
+            size = size * 2;
+            *word = realloc(*word, sizeof(char) * size);
+        }
+
+        // space and newline is the sign of the end of a word
+        if (!isalpha(c)) {
+            (*word)[len] = '\0';
+            return c;
+        } else {
+            (*word)[len] = c;
+        }
+        len++;
+    }
+
+    if (len == 0) {
+        return 0;
+    } else {
+        if (len == size) {
+            size += 1;
+            *word = realloc(*word, sizeof(char) * size);
+        }
+        (*word)[len] = '\0';
+        return 0;
+    }
 }
 
 /*
@@ -102,8 +161,34 @@ int stringEquals(void *s1, void *s2) {
  * arbitrarily long dictionary chacaters.
  */
 void readDictionary(char *filename) {
-  fprintf(stderr, "Need to define readDictionary\n");
-  exit(0);
+    FILE *fp = fopen(filename, "r");
+    // file doesn't exist, print information and exit
+    if (fp == NULL) {
+        fprintf(stderr, "file %s does not exist\n", filename);
+        exit(0);
+    }
+    char *nWord;
+    int initWordSize = 8;
+    char delimiter;
+    delimiter = readWord(fp, &nWord, initWordSize);
+    while (delimiter != 0) {
+        insertData(dictionary, (void *)nWord, (void *)nWord);
+        delimiter = readWord(fp, &nWord, initWordSize);
+    }
+    fclose(fp);
+}
+
+void appendWord(char **dest, unsigned int *size, char *word, char del) {
+    int end = strlen(*dest) + strlen(word) + 1;
+    if (*size <= end) {
+        *size = *size * 2;
+        *dest = realloc(*dest, sizeof(char) * *size);
+    }
+    strcat(*dest, word);
+    if (del != '\0' && del != -1) {
+        (*dest)[end - 1] = del;
+        (*dest)[end] = '\0';
+    }
 }
 
 /*
@@ -130,6 +215,38 @@ void readDictionary(char *filename) {
  * of your grade, you can no longer assume words have a bounded length.
  */
 void processInput() {
-  fprintf(stderr, "Need to define processInput\n");
-  exit(0);
+    char *nWord;
+    unsigned int outsize = 8;
+    int initWordSize = 8;
+    char delimiter = readWord(stdin, &nWord, initWordSize);
+    char *out = malloc(sizeof(char) * initWordSize);
+    out[0] = '\0';
+    char *message = " [sic]";
+    while (delimiter != 0) {
+        // convert all but initial letter to lowercase
+        char *nWORD = malloc(sizeof(char) * strlen(nWord));
+        strcpy(nWORD, nWord);
+        for (int j = 1; j < strlen(nWORD); ++j) {
+            nWORD[j] = (char) tolower(nWORD[j]);
+        }
+        //convert all letters to lower case
+        char *nword = malloc(sizeof(char) * strlen(nWord));
+        strcpy(nword, nWord);
+        for (int i = 0; i < strlen(nword); ++i) {
+            nword[i] = (char) tolower(nword[i]);
+        }
+        if (!findData(dictionary, nWord) && !findData(dictionary, nWORD) && !findData(dictionary, nword)) {
+            appendWord(&out, &outsize, nWord, '\0');
+            appendWord(&out, &outsize, message, delimiter);
+        } else {
+            appendWord(&out, &outsize, nWord, delimiter);
+        }
+        free(nWORD);
+        free(nword);
+        delimiter = readWord(stdin, &nWord, initWordSize);
+    }
+
+    printf("%s", out);
+//  fprintf(stderr, "Need to define processInput\n");
+//  exit(0);
 }
