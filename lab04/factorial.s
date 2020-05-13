@@ -22,3 +22,14 @@ main:
 
 factorial:
     # YOUR CODE HERE
+    # use for-loop
+    add t1, x0, x0 # int i = 0
+    addi t2, x0, 1 # int res = 1;
+floop:
+    addi t1, t1, 1 # i++
+    mul t2, t2, t1 # res = res * i, only lower bits
+    blt t1, a0, floop
+
+exit:
+    add a0, x0, t2
+    ret

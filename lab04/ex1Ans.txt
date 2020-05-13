@@ -1,0 +1,10 @@
+1. .data means subsequent items put in user data segment (binary representation of data in source file);
+.word means store the 32-bit quantities in successive memory;
+.text means subsequent items put in user text segment (machine code)
+
+2. outputs 34, its the 9th fibonacci number.
+
+3. n is stored at 0x10000010.
+
+4. change t3 to 0x0d
+

@@ -1,0 +1,26 @@
+1. register t0 represents variable k;
+2. register s0 represents variable sum;
+3. register s1 points to source, and register s2 points to dest;
+4. loop:
+    slli s3, t0, 2
+    add t1, s1, s3
+    lw t2, 0(t1)
+    beq t2, x0, exit
+    add a0, x0, t2
+    addi sp, sp, -8
+    sw t0, 0(sp)
+    sw t2, 4(sp)
+    jal square
+    lw t0, 0(sp)
+    lw t2, 4(sp)
+    addi sp, sp, 8
+    add t2, x0, a0
+    add t3, s2, s3
+    sw t2, 0(t3)
+    add s0, s0, t2
+    addi t0, t0, 1
+    jal x0, loop
+5. pointer to the kth item of source is in register t1, t1 is calculated
+by adding s1 and t0<<2; pointer to kth item of dest is in register t3, t3 
+is calculated by adding s2 and t0<<2; t0<<2 is stored in register s3.
+
