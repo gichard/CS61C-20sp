@@ -22,7 +22,7 @@ matmul:
     bne a2, a4, mismatched_dimensions
 
     # Prologue
-    addi sp, sp, -32
+    addi sp, sp, -36
     sw s0, 0(sp)
     sw s1, 4(sp)
     sw s2, 8(sp)
@@ -31,6 +31,7 @@ matmul:
     sw s5, 20(sp)
     sw s6, 24(sp)
     sw s7, 28(sp)
+    sw ra, 32(sp)
     mv s0, a0 # m0 row vec
     mv s1, a3 # m1 col vec
     mv s2, a1 # rowNum of m0
@@ -51,7 +52,7 @@ inner_loop_start:
     jal ra, dot
     sw a0, 0(a6)
     addi a6, a6, 4
-    addi s1, s1, 1
+    addi s1, s1, 4
     addi s4, s4, 1 # increment col
     j inner_loop_start
 inner_loop_end:
@@ -72,7 +73,8 @@ outer_loop_end:
     lw s5, 20(sp)
     lw s6, 24(sp)
     lw s7, 28(sp)
-    addi sp, sp, 32
+    lw ra, 32(sp)
+    addi sp, sp, 36
     
     ret
 
