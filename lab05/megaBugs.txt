@@ -1,0 +1,7 @@
+1. line 71: jalr s1, didn't save return address to PC+4, so the mystery function won't return to main
+2. line 68: add t1, t1, t0, offset should be 4*t0, since integers takes 4 bytes
+3. line 73: sw a0, 0(t1), register t1 is used by mystery function, should save before call mystery function
+4. line 77: la a0, 8(s0), syntax error, should change to lw a0, 8(s0)
+5. line 80: jal map, the return adress has been altered, recursion calls won't be able to return to main, should recover ra from stack first
+6. line 65: s0 is node address, should use lw to get array address
+7. line 79: lw a1, 0(s1), this instruction will set a1 to the first instruction of mystery function. should use mv a1, s1, to set a1
