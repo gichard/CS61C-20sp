@@ -35,7 +35,7 @@ read_matrix:
 	jal ra, malloc
 	mv s3, a0 # buffer
 	mv a1, s0
-	li a2, 0
+	li a2, 3
 	jal ra, fopen # open file
 	mv s4, a0 # file descriptor
 	mv a1, s4
