@@ -55,6 +55,7 @@
       <a name="facing" val="north"/>
     </tool>
     <tool name="Constant">
+      <a name="width" val="5"/>
       <a name="value" val="0x0"/>
     </tool>
     <tool name="Bit Extender">
@@ -71,6 +72,9 @@
     </tool>
     <tool name="AND Gate">
       <a name="inputs" val="3"/>
+    </tool>
+    <tool name="OR Gate">
+      <a name="inputs" val="4"/>
     </tool>
     <tool name="NAND Gate">
       <a name="inputs" val="7"/>
@@ -228,9 +232,10 @@
       <circ-port height="10" pin="270,160" width="10" x="305" y="175"/>
       <circ-port height="10" pin="580,730" width="10" x="75" y="45"/>
       <circ-port height="10" pin="960,830" width="10" x="225" y="45"/>
-      <circ-port height="10" pin="1520,630" width="10" x="235" y="45"/>
+      <circ-port height="10" pin="1520,610" width="10" x="235" y="45"/>
       <circ-port height="10" pin="930,770" width="10" x="85" y="45"/>
       <circ-port height="10" pin="1530,840" width="10" x="285" y="45"/>
+      <circ-port height="10" pin="790,890" width="10" x="105" y="45"/>
       <circ-anchor facing="east" height="6" width="6" x="307" y="177"/>
     </appear>
     <wire from="(890,210)" to="(940,210)"/>
@@ -263,6 +268,7 @@
     <wire from="(320,430)" to="(340,430)"/>
     <wire from="(470,700)" to="(490,700)"/>
     <wire from="(970,670)" to="(1000,670)"/>
+    <wire from="(700,910)" to="(790,910)"/>
     <wire from="(160,600)" to="(160,650)"/>
     <wire from="(490,370)" to="(500,370)"/>
     <wire from="(470,710)" to="(480,710)"/>
@@ -300,9 +306,11 @@
     <wire from="(1160,210)" to="(1210,210)"/>
     <wire from="(750,480)" to="(750,500)"/>
     <wire from="(1130,660)" to="(1130,930)"/>
+    <wire from="(700,910)" to="(700,930)"/>
     <wire from="(290,650)" to="(290,750)"/>
     <wire from="(1240,560)" to="(1240,930)"/>
     <wire from="(310,570)" to="(400,570)"/>
+    <wire from="(700,870)" to="(700,910)"/>
     <wire from="(1180,470)" to="(1190,470)"/>
     <wire from="(460,570)" to="(490,570)"/>
     <wire from="(1360,870)" to="(1440,870)"/>
@@ -315,7 +323,6 @@
     <wire from="(1190,690)" to="(1280,690)"/>
     <wire from="(420,750)" to="(420,800)"/>
     <wire from="(270,600)" to="(270,650)"/>
-    <wire from="(700,870)" to="(700,930)"/>
     <wire from="(1520,400)" to="(1520,510)"/>
     <wire from="(340,430)" to="(340,490)"/>
     <wire from="(700,750)" to="(710,750)"/>
@@ -332,6 +339,7 @@
     <wire from="(290,590)" to="(290,610)"/>
     <wire from="(1050,190)" to="(1050,220)"/>
     <wire from="(1900,640)" to="(1900,910)"/>
+    <wire from="(790,890)" to="(790,910)"/>
     <wire from="(1580,620)" to="(1580,750)"/>
     <wire from="(1430,210)" to="(1480,210)"/>
     <wire from="(1070,210)" to="(1120,210)"/>
@@ -359,6 +367,7 @@
     <wire from="(980,210)" to="(1030,210)"/>
     <wire from="(380,240)" to="(380,310)"/>
     <wire from="(340,800)" to="(340,870)"/>
+    <wire from="(1520,590)" to="(1520,610)"/>
     <wire from="(1320,190)" to="(1320,220)"/>
     <wire from="(1190,550)" to="(1230,550)"/>
     <wire from="(200,240)" to="(380,240)"/>
@@ -394,7 +403,6 @@
     <wire from="(200,70)" to="(590,70)"/>
     <wire from="(1190,690)" to="(1190,800)"/>
     <wire from="(1540,890)" to="(1540,930)"/>
-    <wire from="(1520,590)" to="(1520,630)"/>
     <comp lib="0" loc="(570,270)" name="Pin">
       <a name="label" val="CLOCK"/>
     </comp>
@@ -726,11 +734,6 @@
       <a name="output" val="true"/>
       <a name="width" val="32"/>
     </comp>
-    <comp lib="0" loc="(1520,630)" name="Pin">
-      <a name="facing" val="north"/>
-      <a name="output" val="true"/>
-      <a name="width" val="32"/>
-    </comp>
     <comp lib="0" loc="(930,770)" name="Pin">
       <a name="facing" val="south"/>
       <a name="output" val="true"/>
@@ -741,6 +744,16 @@
       <a name="output" val="true"/>
       <a name="width" val="4"/>
       <a name="labelloc" val="east"/>
+    </comp>
+    <comp lib="0" loc="(790,890)" name="Pin">
+      <a name="facing" val="south"/>
+      <a name="output" val="true"/>
+      <a name="width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(1520,610)" name="Pin">
+      <a name="facing" val="north"/>
+      <a name="output" val="true"/>
+      <a name="width" val="32"/>
     </comp>
   </circuit>
 </project>
