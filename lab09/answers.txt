@@ -1,51 +1,85 @@
 Exercise 1
 	Scenario 1
-		1. 
-		2.
-		3.
+		1. because step size in bytes is exactly equal to L1 cache size in bytes,
+		and the associativity is 1.
+		2. hit rate will remains to be 0, because the cache is write allocate, and 
+		it gets updated after each step.
+		3. change step size to 32.
 
 	Scenario 2
-		1.
-		2.
-		3.
-		4.
-		5.
+		1. 64 memory accesses
+		2. the pattern is MISS-HIT-HIT-HIT. Because the block size is 16 bytes, which can hold 4 integers. the step size is 2, so upon first read, the block caches memory for this and next step. The cache size is 256 bytes, 
+		so it can hold the whole array, so the pattern will continue.
+		3. since the hit rate is 0.75 in 2 steps according to the pattern, and 
+		there are 32 steps in total, so the overall hit rate is 0.75.
+		4. the hit rate will approach to 1 as the Rep Count goes to infinity, 
+		because the whole array is cached after the first outer loop.
+		5. to achieve such a high hit rate, we can slice the array to smaller blocks that can fit into the cache. Then add an outer loop outside of 
+		repcount to apply all the different functions to one block at a time.
 
 	Scenario 3
-		1.
-		2.
-		3.
-		4.
-		5.
+		1. L1 hit rate is 0.5, L2 hit rate is 0, overall hit rate is 0.5.
+		2. 32 acesses to L1, 16 misses
+		3. 16 acesses to L2, 16 misses
+		4. increase Rep Count. because L2 cache can hold the whole array, so the hit rate will increase after the first loop. And L1 can only hold half of the array, so the cache needs to update after each loop, hence the hit rate will remain 0.5.
+		5. increase L1 blocks won't affect both L1 and L2's hit rate if RepCount is 
+		1; increase L1 block size can increase its hit rate, but L2's hit rate won't
+		be affected.
 
 Exercise 2
-	ijk:
-	ikj:
-	jik:
-	jki:
-	kij:
-	kji:
+	ijk:    n = 1000, 2.348 Gflop/s
+	ikj:    n = 1000, 0.709 Gflop/s
+	jik:    n = 1000, 2.342 Gflop/s
+	jki:    n = 1000, 16.507 Gflop/s
+	kij:    n = 1000, 0.701 Gflop/s
+	kji:    n = 1000, 12.952 Gflop/s
 
-	1.
-	2.
-	3.
+	1. jki performs best, A and C moves in stride 1, and B moves in stride 0 in the 
+	inner most loop, the cache hit rate is high.
+	2. kij and ikj performs worst, B and C moves in stride n, and A moves in stride 
+	0, the cache hit rate is low. 
+	3. the heavy work is done is the inner most loop, the matrix moves in stride 1 
+	means we have spatial locality; the matrix moves in stride 0 means we have temporal locality; 
+	the matrix moves in stride n implies no locality for large n. So the stride affects our cache 
+	performance a lot. 
 
 Exercise 3
 	Part 1
-		blocksize = 20, n = 100: 
-		blocksize = 20, n = 1000: 
-		blocksize = 20, n = 2000: 
-		blocksize = 20, n = 5000: 
-		blocksize = 20, n = 10000: 
+		blocksize = 20, n = 100: 0.007	0.004 milliseconds
+		blocksize = 20, n = 1000: 1.052	1.254 milliseconds
+		blocksize = 20, n = 2000: 9.56	7.946 milliseconds
+		blocksize = 20, n = 5000: 117.084	55.286 milliseconds
+		blocksize = 20, n = 10000: 643.59	220.949 milliseconds
 
-		1.
-		2.
+		
+
+		1. On my machine(AMD ryzen 1700@3.7GHz, dual channel RAM 48GB@2666MHz, ArchLinux, 
+		GCC 10.1.0), the result is almost always better except a few cases, n=1000(always worse), 
+		960, 940(sometimes worse). 
+		2. the overhead of blocked transpose should cause the programme to 
+		perform worse for small input, but the CPU has a memmory latency of about 70ns, which makes
+		the cache miss penalty higher. On the other hand it has 768KB total L1 cache, 4MB L2 cache and 16MB 
+		L3 cache, each core has 96KB L1 cache. Provided code does transpose of A to B for both functions,
+		and naive transpose runs first. This first run makes the matrices cached for small inputs, so the 
+		second run has almost no compulsory penalty. Thus its almost always better. To be fair, create new 
+		matrices C and D or blocked transpose, the result is as follows:
+			blocksize = 20, n = 100: 0.005	0.005
+			blocksize = 20, n = 200: 0.016	0.019
+			blocksize = 20, n = 500: 0.115	0.145
+			blocksize = 20, n = 1000: 1.013	1.579
+			blocksize = 20, n = 2000: 9.455	7.728
+			blocksize = 20, n = 5000: 115.095	55.482
+			blocksize = 20, n = 10000: 640.395	218.366
+		Now we can see that the blocked transpose gets better when matrix size gets over 2000.
+
 
 	Part 2
-		blocksize = 50, n = 10000:
-		blocksize = 100, n = 10000:
-		blocksize = 500, n = 10000:
-		blocksize = 1000, n = 10000:
-		blocksize = 5000, n = 10000:
+		blocksize = 50, n = 10000: 638.444	119.342
+		blocksize = 100, n = 10000: 640.22	133.786
+		blocksize = 500, n = 10000: 639.851	90.935
+		blocksize = 1000, n = 10000: 639.046	231.765
+		blocksize = 5000, n = 10000: 641.873	650.854
 
-		1.
+		1. the performance gets better first(ignore 50-100), then it gets worse when blocksize gets over 500.
+		When blocksize is small, the block cannot fill the cache, thus increase block size can improve locality.
+		But when the cache is full, incresing blocksize will reduce cache performance dramatically.
