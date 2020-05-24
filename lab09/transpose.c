@@ -16,6 +16,18 @@ void transpose_naive(int n, int blocksize, int *dst, int *src) {
  * multiple of the block size. */
 void transpose_blocking(int n, int blocksize, int *dst, int *src) {
     // YOUR CODE HERE
+    int row, col;
+    for (int x = 0; x < n; x += blocksize) {
+        row = (x <= (n - blocksize)) ? blocksize : (n - x);
+        for (int y = 0; y < n; y += blocksize) {
+            col = (y <= (n - blocksize)) ? blocksize : (n - y);
+            for (int i = 0; i < row; ++i) {
+                for (int j = 0; j < col; ++j) {
+                    dst[x + i + (j + y) * n] = src[y + j + (i + x) * n];
+                }
+            }
+        }
+    }
 }
 
 void benchmark(int *A, int *B, int n, int blocksize,
@@ -64,11 +76,13 @@ int main( int argc, char **argv ) {
     /* allocate an n*n block of integers for the matrices */
     int *A = (int*)malloc( n*n*sizeof(int) );
     int *B = (int*)malloc( n*n*sizeof(int) );
+//    int *C = (int*)malloc( n*n*sizeof(int) );
+//    int *D = (int*)malloc( n*n*sizeof(int) );
 
     /* run tests */
     benchmark(A, B, n, blocksize, transpose_naive, "naive transpose");
     benchmark(A, B, n, blocksize, transpose_blocking, "transpose with blocking");
-
+//    benchmark(C, D, n, blocksize, transpose_blocking, "transpose with blocking");
     /* release resources */
     free( A );
     free( B );
