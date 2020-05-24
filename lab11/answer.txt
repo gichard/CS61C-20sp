@@ -1,0 +1,11 @@
+ex1. - page size is 32 words;
+	 - 4 TLB hits, 6 TLB misses, 0 page hits and 6 page faults
+	 - no page hits. because only have 4 physical pages and they are cached in TLB, each time a page is not in TLB, it cannot be in memory, hence not in page table.
+	 - first get the virtual page number and look for it in TLB.
+	 if TLB hit, get the physical page number and use offset to access memory; if TLB miss, look up page table. if page hits, update TLB and access memory;
+	 if page fault, allocate physical page and update page table and TLB, if no empty page is available, evict LRU(or random) page.
+ex2. 0F 2E 4D 6C 8B AA C9 E8 07 26
+ex3. double the memory size can reduce page faults to 8 and keep TLB misses 10.
+ex4. the VIMSIM has 4 processes running, denoted by P1-P4. these processes share the same physical memory and each one has its own TLB and page table. the 
+processes runs alternatively. the percentage of TLB misses is higher because when a process is sleeping, the running process may evict its physical page, 
+resulting its TLB entry to be invalid.
