@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
 	printf("Sum: %lld\n", sum_unrolled(vals));
 
 	printf("Starting randomized SIMD sum.\n");
-	printf("Sum: %lld\n", simd = sum_simd(vals));
-	if (simd != reference) {
+    printf("Sum: %lld\n", simd = sum_simd(vals));
+    if (simd != reference) {
 		printf("OH NO! SIMD sum %lld doesn't match reference sum %lld!\n", simd, reference);
 	}
 
