@@ -14,20 +14,32 @@ void v_add_naive(double* x, double* y, double* z) {
 	}
 }
 
-// Edit this function (Method 1) 
+// Edit this function (Method 1)
+// false sharing ruins this idea, because cache line size is larger than 8 bytes
 void v_add_optimized_adjacent(double* x, double* y, double* z) {
-     #pragma omp parallel
+    int workers = omp_get_num_threads();
+    #pragma omp parallel
 	{
-		for(int i=0; i<ARRAY_SIZE; i++)
+	    int w = omp_get_thread_num();
+		for(int i = w; i<ARRAY_SIZE; i += workers)
 			z[i] = x[i] + y[i];
 	}
 }
 
 // Edit this function (Method 2) 
 void v_add_optimized_chunks(double* x, double* y, double* z) {
-          #pragma omp parallel
+    int chunks = omp_get_num_threads();
+    int chunkSize = ARRAY_SIZE;
+    if (chunks > 1) {
+        chunkSize = (ARRAY_SIZE % chunks == 0) ? ARRAY_SIZE / chunks : (ARRAY_SIZE / (chunks - 1));
+    }
+    #pragma omp parallel
 	{
-		for(int i=0; i<ARRAY_SIZE; i++)
+	    int w = omp_get_thread_num();
+	    int start = w * chunkSize;
+	    int stop = (w + 1) * chunkSize;
+	    stop = stop < ARRAY_SIZE ? stop : ARRAY_SIZE;
+		for(int i = start; i<stop; i++)
 			z[i] = x[i] + y[i];
 	}
 }
@@ -65,8 +77,8 @@ int main() {
 
 
 	for(int i=1; i<=num_threads; i++) {
-		omp_set_num_threads(i);		
-	  start_time = omp_get_wtime();
+        omp_set_num_threads(i);
+	    start_time = omp_get_wtime();
 		for(int j=0; j<REPEAT; j++)
 			v_add_optimized_adjacent(x,y,z);
 		run_time = omp_get_wtime() - start_time;
