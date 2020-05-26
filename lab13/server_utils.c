@@ -193,10 +193,10 @@ void dispatch(int client_socket_number) {
    request_handler(client_socket_number, request);
    close(client_socket_number);
 
-   sleep(5);      // Pretending we are doing some heavy computation...
+//   sleep(5);      // Pretending we are doing some heavy computation...
 }
 
-/** Open a TCP socket on all interfaces. *socket_number stores
+_Noreturn /** Open a TCP socket on all interfaces. *socket_number stores
  * the fd number of the server socket in  call request_handler
  * with the accepted socket fd number on an accepted connection.*/
 void serve_forever(int *socket_number) {
@@ -250,7 +250,13 @@ void serve_forever(int *socket_number) {
       pid_t parent_pid = getpid();
 #ifdef PROC
       // PART2 TASK: Implement forking
-
+      pid_t child_pid = fork();
+      if (child_pid != 0) {
+          printf("process %d is handling request:\n", child_pid);
+      } else {
+          dispatch(client_socket_number);
+          exit(EXIT_SUCCESS);
+      }
 
 #else
       dispatch(client_socket_number);
