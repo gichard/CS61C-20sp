@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -std=gnu99 -c -fopenmp
-LDFLAGS=-fopenmp
+CFLAGS=  -c -fopenmp -fcommon
+LDFLAGS=-fopenmp -fcommon
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLES=v_add dotp hello server_basic server_process
 
