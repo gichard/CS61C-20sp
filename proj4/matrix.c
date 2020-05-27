@@ -129,7 +129,8 @@ void deallocate_matrix(matrix *mat) {
             mat->ref_cnt -= 1;
         } else { // 2. mat is a slice, decrement ref_cnt to data, free mat, if ref_cnt==0, free parent
             mat->parent->ref_cnt -= 1;
-            deallocate_matrix(mat->parent);
+            if (mat->parent->ref_cnt == 0) // if parent has no ref, deallocate data
+                deallocate_matrix(mat->parent);
             free(mat);
         }
     }
@@ -269,7 +270,7 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int pow_matrix(matrix *result, matrix *mat, int pow) {
     /* TODO: YOUR CODE HERE */
-    if (mat->rows != mat->cols || pow < 1) {
+    if (mat->rows != mat->cols || pow < 0) {
         return 1; // only works for square matrices and non negative power
     }
 

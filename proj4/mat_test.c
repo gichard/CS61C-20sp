@@ -150,6 +150,25 @@ void pow_test(void) {
   deallocate_matrix(mat);
 }
 
+// test A^0 = I
+void pow_test0(void ) {
+    matrix *result = NULL;
+    matrix *mat = NULL;
+    CU_ASSERT_EQUAL(allocate_matrix(&result, 2, 2), 0);
+    CU_ASSERT_EQUAL(allocate_matrix(&mat, 2, 2), 0);
+    set(mat, 0, 0, 1);
+    set(mat, 0, 1, 1);
+    set(mat, 1, 0, 1);
+    set(mat, 1, 1, 0);
+    pow_matrix(result, mat, 0);
+    CU_ASSERT_EQUAL(get(result, 0, 0), 1);
+    CU_ASSERT_EQUAL(get(result, 0, 1), 0);
+    CU_ASSERT_EQUAL(get(result, 1, 0), 0);
+    CU_ASSERT_EQUAL(get(result, 1, 1), 1);
+    deallocate_matrix(result);
+    deallocate_matrix(mat);
+}
+
 void alloc_fail_test(void) {
   matrix *mat = NULL;
   CU_ASSERT_EQUAL(allocate_matrix(&mat, 0, 0), -1);
@@ -266,7 +285,8 @@ int main (void)
         (CU_add_test(pSuite, "alloc_ref_success_test", alloc_ref_success_test) == NULL) ||
         (CU_add_test(pSuite, "dealloc_null_test", dealloc_null_test) == NULL) ||
         (CU_add_test(pSuite, "get_test", get_test) == NULL) ||
-        (CU_add_test(pSuite, "set_test", set_test) == NULL)
+        (CU_add_test(pSuite, "set_test", set_test) == NULL) ||
+        (CU_add_test(pSuite, "pow_test0", pow_test) == NULL)
      )
    {
       CU_cleanup_registry();
@@ -274,8 +294,8 @@ int main (void)
    }
 
   // Run all tests using the basic interface
-  CU_basic_set_mode(CU_BRM_NORMAL);
-  // CU_basic_set_mode(CU_BRM_VERBOSE);
+//  CU_basic_set_mode(CU_BRM_NORMAL);
+   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   printf("\n");
   CU_basic_show_failures(CU_get_failure_list());
