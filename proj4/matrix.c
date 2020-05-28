@@ -203,7 +203,49 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     if (result->rows == mat1->rows && result->cols == mat1->cols
         && result->rows == mat2->rows && result->cols == mat2->cols) {
         int total = result->rows * result->cols;
-        for (int i = 0; i < total; ++i) {
+//        for (int i = 0; i < total; ++i) {
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//        }
+
+//        // do unrolling
+//        int unroll = 1;
+//        for (int i = 0; i < total; i += unroll) {
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//        }
+//        // tail case
+//        for (int j = total/unroll*unroll; j < total; ++j) {
+//            result->data[j] = mat1->data[j] + mat2->data[j];
+//        }
+
+//        // use AVX and unrolling
+//        __m256d d1;
+//        __m256d d2;
+//        __m256d res;
+//        int unroll = 1;
+//        int stride = 4 * unroll;
+//        for (int i = 0; i < total / stride * stride; ) {
+//            d1 = _mm256_loadu_pd(mat1->data + i);
+//            d2 = _mm256_loadu_pd(mat2->data + i);
+//            res = _mm256_add_pd(d1, d2);
+//            _mm256_storeu_pd(result->data + i, res);
+//            i += 4;
+//        }
+//        //tail case
+//        for (int k = total / stride * stride; k < total / 4 * 4; k += 4) {
+//            d1 = _mm256_loadu_pd(mat1->data + k);
+//            d2 = _mm256_loadu_pd(mat2->data + k);
+//            res = _mm256_add_pd(d1, d2);
+//            _mm256_storeu_pd(result->data + k, res);
+//        }
+//        for (int j = total / 4 * 4; j < total; ++j) {
+//            result->data[j] = mat1->data[j] + mat2->data[j];
+//        }
+
+        // use omp
+        omp_set_num_threads(8);
+        int i;
+        #pragma omp parallel for private(i)
+        for (i = 0; i < total; ++i) {
             result->data[i] = mat1->data[i] + mat2->data[i];
         }
         return 0;
