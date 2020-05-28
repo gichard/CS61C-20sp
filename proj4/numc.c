@@ -491,12 +491,13 @@ static PyObject *Matrix61c_pow(Matrix61c *self, PyObject *pow, PyObject *optiona
  * define. You might find this link helpful: https://docs.python.org/3.6/c-api/typeobj.html
  */
 static PyNumberMethods Matrix61c_as_number = {
-        .nb_add = (binaryfunc) Matrix61c_add,
-        .nb_subtract = (binaryfunc) Matrix61c_sub,
-        .nb_multiply = (binaryfunc) Matrix61c_multiply,
-        .nb_power = (ternaryfunc) Matrix61c_pow,
-        .nb_negative = (unaryfunc) Matrix61c_neg,
-        .nb_absolute = (unaryfunc) Matrix61c_abs,
+    .nb_add = (binaryfunc) Matrix61c_add,
+    .nb_subtract = (binaryfunc) Matrix61c_sub,
+    .nb_multiply = (binaryfunc) Matrix61c_multiply,
+    .nb_power = (ternaryfunc) Matrix61c_pow,
+    .nb_negative = (unaryfunc) Matrix61c_neg,
+    .nb_absolute = (unaryfunc) Matrix61c_abs,
+
 };
 
 /* INSTANCE METHODS */
@@ -580,7 +581,8 @@ static PyMethodDef Matrix61c_methods[] = {
     {"abs", (PyCFunction)Matrix61c_abs, METH_VARARGS, "returns the elementwise absolute matrix"},
     {"pow", (PyCFunction)Matrix61c_pow, METH_VARARGS, "returns the power matrix"},
     {"set", (PyCFunction)Matrix61c_set_value, METH_VARARGS, "set value at given position"},
-    {"get", (PyCFunction)Matrix61c_get_value, METH_VARARGS, "returns value at given position"}
+    {"get", (PyCFunction)Matrix61c_get_value, METH_VARARGS, "returns value at given position"},
+    {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
 /* INSTANCE ATTRIBUTES*/
