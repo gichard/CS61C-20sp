@@ -28,13 +28,13 @@ void v_add_optimized_adjacent(double* x, double* y, double* z) {
 
 // Edit this function (Method 2) 
 void v_add_optimized_chunks(double* x, double* y, double* z) {
-    int chunks = omp_get_num_threads();
-    int chunkSize = ARRAY_SIZE;
-    if (chunks > 1) {
-        chunkSize = (ARRAY_SIZE % chunks == 0) ? ARRAY_SIZE / chunks : (ARRAY_SIZE / (chunks - 1));
-    }
     #pragma omp parallel
 	{
+        int chunks = omp_get_num_threads();
+        int chunkSize = ARRAY_SIZE;
+        if (chunks > 1) {
+        chunkSize = (ARRAY_SIZE % chunks == 0) ? ARRAY_SIZE / chunks : (ARRAY_SIZE / (chunks - 1));
+        }
 	    int w = omp_get_thread_num();
 	    int start = w * chunkSize;
 	    int stop = (w + 1) * chunkSize;
