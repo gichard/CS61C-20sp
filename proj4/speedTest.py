@@ -1,27 +1,29 @@
 import time
 import numc as nc
 import numpy as np
+import threading
 
 def addTime():
     print("=" * 60)
     print("{:^54}".format("test Add speed"))
     print("{:>34}{:>10}{:>10}".format(" ", "numc", "NumPy"))
     print("=" * 60)
-    size = [100, 1000, 2000, 5000, 10000]
+    size = [1000, 2000, 5000, 10000, 20000]
     for s in size:
         mat1 = nc.Matrix(s, s, rand=True)
         mat2 = nc.Matrix(s, s, rand=True)
-        start = time.time()
+        start = time.thread_time()
         res = mat1 + mat2
-        end = time.time()
+        end = time.thread_time()
         t1 = end - start
         
-        mat1 = np.random.random((s, s))
-        mat2 = np.random.random((s, s))
-        start = time.time()
-        res = mat1 + mat2
-        end = time.time()
-        print("Add two {:6d} by {:6d} matrices {:10.3f} {:10.3f}".format(s, s, t1, end - start))
+        # mat1 = np.random.random((s, s))
+        # mat2 = np.random.random((s, s))
+        # start = time.time()
+        # res = mat1 + mat2
+        # end = time.time()
+        # print("Add two {:6d} by {:6d} matrices {:10.3f} {:10.3f}".format(s, s, t1, end - start))
+        # print("Add two {:6d} by {:6d} matrices {:10.3f}".format(s, s, t1))
 
 def subTime():
     print("=" * 60)
@@ -132,11 +134,11 @@ def powTime():
 
 def main():
     addTime()
-    subTime()
-    mulTime()
-    negTime()
-    absTime()
-    powTime()
+    # subTime()
+    # mulTime()
+    # negTime()
+    # absTime()
+    # powTime()
 
 if __name__ == "__main__":
     main()

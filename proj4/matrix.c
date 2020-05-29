@@ -36,10 +36,15 @@ double rand_double(double low, double high) {
 /* Generates a random matrix */
 void rand_matrix(matrix *result, double low, double high) {
     srand(42);
-    for (int i = 0; i < result->rows; i++) {
-        for (int j = 0; j < result->cols; j++) {
-            set(result, i, j, rand_double(low, high));
-        }
+//    for (int i = 0; i < result->rows; i++) {
+//        for (int j = 0; j < result->cols; j++) {
+//            set(result, i, j, rand_double(low, high));
+//        }
+//    }
+    int total = result->cols * result->rows;
+    #pragma omp parallel for
+    for (int i = 0; i < total; ++i) {
+        result->data[i] = rand_double(low, high);
     }
 }
 
@@ -142,7 +147,14 @@ void deallocate_matrix(matrix *mat) {
  */
 double get(matrix *mat, int row, int col) {
     /* TODO: YOUR CODE HERE */
-    int offset = row * mat->cols + col;
+    int offset;
+    int cols = mat->cols;
+    matrix *mp = mat->parent;
+    while (mp != NULL) { // supports nested child
+        cols = mp->cols;
+        mp = mp->parent;
+    }
+    offset = row * cols + col;
     return mat->data[offset];
 }
 
@@ -152,12 +164,19 @@ double get(matrix *mat, int row, int col) {
  */
 void set(matrix *mat, int row, int col, double val) {
     /* TODO: YOUR CODE HERE */
-    int offset = row * mat->cols + col;
+    int offset;
+    int cols = mat->cols;
+    matrix *mp = mat->parent;
+    while (mp != NULL) { // supports nested child
+        cols = mp->cols;
+        mp = mp->parent;
+    }
+    offset = row * cols + col;
     mat->data[offset] = val;
 }
 
 /*
- * Sets mat to unit matrix
+ * Sets mat to unit matrix, NOT applicable for a child matrix
  * */
 void set_eye(matrix *mat) {
     int total = mat->rows * mat->cols;
@@ -203,19 +222,56 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     if (result->rows == mat1->rows && result->cols == mat1->cols
         && result->rows == mat2->rows && result->cols == mat2->cols) {
         int total = result->rows * result->cols;
+        double *res_mat = result->data;
+        double *a_mat = mat1->data;
+        double *b_mat = mat2->data;
+//        // naive
 //        for (int i = 0; i < total; ++i) {
-//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            res_mat[i] = a_mat[i] + b_mat[i];
 //        }
+//        return 0;
 
 //        // do unrolling
-//        int unroll = 1;
+//        int unroll = 32;
 //        for (int i = 0; i < total; i += unroll) {
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//            result->data[i] = mat1->data[i] + mat2->data[i];
 //            result->data[i] = mat1->data[i] + mat2->data[i];
 //        }
 //        // tail case
 //        for (int j = total/unroll*unroll; j < total; ++j) {
 //            result->data[j] = mat1->data[j] + mat2->data[j];
 //        }
+//        return 0;
 
 //        // use AVX and unrolling
 //        __m256d d1;
@@ -240,13 +296,83 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
 //        for (int j = total / 4 * 4; j < total; ++j) {
 //            result->data[j] = mat1->data[j] + mat2->data[j];
 //        }
+//        return 0;
 
-        // use omp
-        omp_set_num_threads(8);
-        int i;
-        #pragma omp parallel for private(i)
-        for (i = 0; i < total; ++i) {
-            result->data[i] = mat1->data[i] + mat2->data[i];
+//        //use omp
+//        omp_set_num_threads(16);
+//        #pragma omp parallel for
+//        for (int i = 0; i < total; ++i) {
+//            result->data[i] = mat1->data[i] + mat2->data[i];
+//        }
+//        return 0;
+
+//        //use omp and AVX
+//        __m256d d1;
+//        __m256d d2;
+//        __m256d res;
+//        int stride = 4;
+//        omp_set_num_threads(16);
+//        #pragma omp parallel private(d1, d2, res)
+//        {
+//            #pragma omp for
+//            for (int i = 0; i < total / stride * stride; i += 4) {
+//                d1 = _mm256_loadu_pd(a_mat + i);
+//                d2 = _mm256_loadu_pd(b_mat + i);
+//                res = _mm256_add_pd(d1, d2);
+//                _mm256_storeu_pd(res_mat + i, res);
+//            }
+//            for (int k = total / 4 * 4; k < total; ++k) {
+//                res_mat[k] = a_mat[k] + b_mat[k];
+//            }
+//        }
+//        return 0;
+
+        //use omp and AVX
+        __m256d d1;
+        __m256d d2;
+        __m256d res1;
+        __m256d res2;
+        __m256d res3;
+        __m256d res4;
+        __m256d res5;
+        int unroll = 4;
+        int stride = 4 * unroll;
+        omp_set_num_threads(16);
+        #pragma omp parallel private(d1, d2, res1, res2, res3, res4, res5)
+        {
+            #pragma omp for
+            for (int i = 0; i < total / stride * stride; i += 16) {
+                d1 = _mm256_loadu_pd(a_mat + i);
+                d2 = _mm256_loadu_pd(b_mat + i);
+                res1 = _mm256_add_pd(d1, d2);
+
+                d1 = _mm256_loadu_pd(a_mat + i);
+                d2 = _mm256_loadu_pd(b_mat + i);
+                res2 = _mm256_add_pd(d1, d2);
+
+                d1 = _mm256_loadu_pd(a_mat + i);
+                d2 = _mm256_loadu_pd(b_mat + i);
+                res3 = _mm256_add_pd(d1, d2);
+
+                d1 = _mm256_loadu_pd(a_mat + i);
+                d2 = _mm256_loadu_pd(b_mat + i);
+                res4 = _mm256_add_pd(d1, d2);
+
+                _mm256_storeu_pd(res_mat + i, res1);
+                _mm256_storeu_pd(res_mat + i + 4, res2);
+                _mm256_storeu_pd(res_mat + i + 8, res3);
+                _mm256_storeu_pd(res_mat + i + 12, res4);
+            }
+
+            for (int j = total / stride * stride; j < total / 4 * 4; j += 4) {
+                d1 = _mm256_loadu_pd(a_mat + j);
+                d2 = _mm256_loadu_pd(b_mat + j);
+                res5 = _mm256_add_pd(d1, d2);
+                _mm256_storeu_pd(res_mat + j, res5);
+            }
+            for (int k = total / 4 * 4; k < total; ++k) {
+                res_mat[k] = a_mat[k] + b_mat[k];
+            }
         }
         return 0;
     }
@@ -263,8 +389,31 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     if (result->rows == mat1->rows && result->cols == mat1->cols
         && result->rows == mat2->rows && result->cols == mat2->cols) {
         int total = result->rows * result->cols;
-        for (int i = 0; i < total; ++i) {
-            result->data[i] = mat1->data[i] - mat2->data[i];
+        double *res_mat = result->data;
+        double *a_mat = mat1->data;
+        double *b_mat = mat2->data;
+
+//        //naive
+//        for (int i = 0; i < total; ++i) {
+//            res_mat[i] = a_mat[i] - b_mat[i];
+//        }
+//        return 0;
+
+        //use omp and AVX
+        __m256d d1;
+        __m256d d2;
+        __m256d res;
+        int stride = 4;
+        omp_set_num_threads(16);
+        #pragma omp parallel private(d1, d2, res)
+        {
+            #pragma omp for
+            for (int i = 0; i < total / stride * stride; i += 4) {
+                d1 = _mm256_loadu_pd(a_mat + i);
+                d2 = _mm256_loadu_pd(b_mat + i);
+                res = _mm256_sub_pd(d1, d2);
+                _mm256_storeu_pd(res_mat + i, res);
+            }
         }
         return 0;
     }

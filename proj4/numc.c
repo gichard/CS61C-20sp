@@ -1,5 +1,6 @@
 #include "numc.h"
 #include <structmember.h>
+#include <omp.h>
 
 static PyTypeObject Matrix61cType;
 
@@ -323,13 +324,18 @@ static PyObject *Matrix61c_add(Matrix61c* self, PyObject* args) {
         PyErr_SetString(PyExc_RuntimeError, "Allocation for result failed!");
         return NULL;
     }
+
+    double start_time = omp_get_wtime();
     int add_failed = add_matrix(sum, self->mat, mat61c->mat);
+
     if (add_failed) {
         return NULL;
     }
     Matrix61c *rv = (Matrix61c*) Matrix61c_new(&Matrix61cType, NULL, NULL);
     rv->mat = sum;
     rv->shape = PyTuple_Pack(2, PyLong_FromLong(sum->rows), PyLong_FromLong(sum->cols));
+    double run_time = omp_get_wtime() - start_time;
+    printf("adding takes %f seconds\n", run_time);
     return (PyObject*)rv;
 }
 
